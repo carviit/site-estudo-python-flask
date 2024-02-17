@@ -1,0 +1,57 @@
+@import url(../css/paginalogin.css);
+
+.form-signin h1 {
+    margin-left: 40px;
+}
+
+.area{
+
+    position: relative;
+    top: -100px;
+
+}
+
+.alerta{
+
+    position: fixed;
+    top: 57%;
+    left: 50%;
+    transform: translate(-50%, 370%);
+    z-index: 1000; 
+
+}
+
+.sucesso{
+
+    position: fixed;
+    top: 57%;
+    left: 50%;
+    transform: translate(-50%, 370%);
+    z-index: 1000; 
+
+}
+
+.botaoModal{
+
+    display: block;
+    margin: auto;
+
+    margin-top: 30px;
+    
+
+}
+
+.modal-body{
+
+    overflow-y: scroll;
+    height: 440px;
+}
+
+.botaoExcluir{
+
+    display: block;
+    margin: auto;
+
+    margin-top: -43px;
+}
+

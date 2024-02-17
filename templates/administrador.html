@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Área Administrador</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <script src="{{ url_for('static', filename='js/modal_usuarios_registrados.js') }}"></script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/modal_usuarios_registrados.js') }}"></script>
+
+
+    <link href="/static/css/paginaadministrador.css" rel="stylesheet">
+</head>
+<body>
+
+    {% set menssagem = get_flashed_messages() %}
+
+    {% if menssagem %}
+
+        {% if 'ERRO' in menssagem[0] %}
+
+            <div class="alert alert-danger alerta" role="alert">
+            {{ menssagem[0] }}
+            </div>
+
+        {% else %}
+
+            <div class="alert alert-success sucesso" role="alert">
+            {{ menssagem[0] }}
+            </div>
+
+        {% endif %}
+
+    {% endif %}
+
+    <form class="form-signin" action = "/cadastrarUsuario" method="post">
+
+    <h1 class="h3 mb-3 font-weight-normal area">Área Adminsitrador</h1>
+    
+      <img class="mb-4" src="/static/imagens/imagemAdministrador.jpg" alt="" width="150" height="150">
+      <h1 class="h3 mb-3 font-weight-normal">Cadastrar Usuário</h1>
+      <label for="inputText" class="sr-only">Login</label>
+      <input type="text" name = "nome" id="inputText" class="form-control" placeholder="Login" required autofocus>
+      <label for="inputText" class="sr-only">Senha</label>
+      <input type="text" name = "senha" id="inputText" class="form-control" placeholder="Senha" required>
+      <button class="btn btn-lg btn-primary btn-block" type="submit">
+        
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>Cadastrar
+      </button>
+
+      <!-- Botão para acionar modal -->
+    <button type="button" class="btn btn-primary btn-lg botaoModal" data-toggle="modal" data-target="#modalUsuariosRegistrados">
+        Usuários Cadastrados
+    </button>
+    
+    </form>
+
+    <!-- Modal -->
+    <div class="modal fade" id="modalUsuariosRegistrados" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Usuários Cadastrados</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+
+            {% if usuarios%}
+
+                {% for usuario in usuarios%}
+
+                <form action="/excluirUsuario" method = "post">
+
+                    <ul>
+                        <input type="hidden" name="usuarioExclusao" value = "{{usuario}}">
+                        <li>USUÁRIO: {{usuario['nome']}} </li>
+                        <li>SENHA: {{usuario['senha']}}</li>
+                        <button type="subimit" class="btn btn-danger botaoExcluir">Excluir</button>
+                        ______________________________________
+                    </ul>
+
+                </form>
+
+                {% endfor%}
+
+            {% else %}
+
+                <h4>Não existe usuários cadastrados</h1>
+
+            {% endif %}
+            
+        </div> 
+        </div>
+    </div>
+    </div>
+
+</body>
+</html>
