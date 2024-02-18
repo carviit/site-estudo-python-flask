@@ -1,6 +1,7 @@
-from flask import Flask, get_flashed_messages, render_template, redirect, request, flash
+from flask import Flask, get_flashed_messages, render_template, redirect, request, flash, send_from_directory
 import json
 import ast
+import os
 
 logado = False
 
@@ -48,8 +49,8 @@ def login():
                 return redirect('/adm')
             
             if nome == usuario['nome'] and senha == usuario['senha']:
-
-                return render_template("usuario.html")
+                logado = True
+                return redirect('/usuarios')
             
             if cont >= len(usuarios):
                 flash('ERRO: LOGIN OU SENHA INVÁLIDOS')
@@ -109,6 +110,45 @@ def excluirUsuario():
 
     return redirect('/adm')
 
+@app.route('/upload', methods = ['POST'])
+def upload():
+    global logado
+    logado = True
+
+    arquivo = request.files.get('documento')
+
+    if arquivo is None or arquivo.filename == '':
+
+        flash('ERRO: Nenhum arquivo escolhido')
+        return redirect('/usuarios')
+
+    nome_arquivo = arquivo.filename.replace(" ", "-")
+
+    arquivo.save(os.path.join('arquivos', nome_arquivo))
+
+    flash('UPLOAD COM SUCESSO')
+
+    return render_template("usuario.html",)
+
+@app.route('/usuarios')
+def usuarios():
+
+    if logado == True:
+
+        arquivos = []
+
+        for documento in os.listdir('arquivos'):
+            arquivos.append(documento)
+
+        return render_template("usuario.html", arquivos = arquivos)
+    
+    return redirect ('/')
+
+@app.route('/download', methods=['POST'])
+def download():
+    nomeArquivo = request.form.get('arquivosParaDownload')
+
+    return send_from_directory('arquivos', nomeArquivo, as_attachment=True)
 
 if __name__ in "__main__":
     app.run(debug=True)

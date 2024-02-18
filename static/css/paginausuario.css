@@ -1,0 +1,56 @@
+@import url("../css/paginalogin.css");
+
+.enviar{
+
+    display: block;
+    margin: auto;
+
+    margin-top: -35px;
+
+}
+
+.alerta{
+
+    position: fixed;
+    top: 44%;
+    left: 50%;
+    transform: translate(-50%, 370%);
+    z-index: 1000; 
+
+}
+
+.sucesso{
+
+    position: fixed;
+    top: 44%;
+    left: 50%;
+    transform: translate(-50%, 370%);
+    z-index: 1000; 
+
+}
+
+.botaoModal{
+
+    position: fixed;
+    top: 36%;
+    left: 50%;
+    transform: translate(-50%, 370%);
+    z-index: 1000;
+    
+}
+
+.download{
+
+
+    display: block;
+    margin: 0 auto;
+    text-align: center;
+    margin-top: 20px
+
+
+
+
+}
+
+
+
