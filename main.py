@@ -1,7 +1,8 @@
-from flask import Flask, get_flashed_messages, render_template, redirect, request, flash, send_from_directory
+from flask import Flask, get_flashed_messages, render_template, redirect, request, flash, send_from_directory,url_for
 import json
 import ast
 import os
+import mysql.connector
 
 logado = False
 
@@ -17,12 +18,20 @@ def home():
 @app.route('/adm')
 def adm():
 
+    conect_BD =  mysql.connector.connect(host = 'localhost', database = 'site_teste', user = 'root', password = '0404') 
+
     if logado == True:
 
-        with open('usuarios.json', 'r') as usuariosTemp:
-            usuarios = json.load(usuariosTemp)
+        conect_BD =  mysql.connector.connect(host = 'localhost', database = 'site_teste', user = 'root', password = '0404') 
 
+        if conect_BD.is_connected():
+
+            cursor = conect_BD.cursor()
+            cursor.execute("SELECT * FROM USUARIOS")
+            usuarios = cursor.fetchall()
+        
         return render_template("administrador.html", usuarios = usuarios)
+    
     if logado == False:
         return redirect('/')
 
@@ -34,11 +43,21 @@ def login():
     nome = request.form.get('nome')
     senha = request.form.get('senha')
 
-    with open('usuarios.json') as usuariosTemp:
-        usuarios = json.load(usuariosTemp)
-        cont = 0
+    conect_BD =  mysql.connector.connect(host = 'localhost', database = 'site_teste', user = 'root', password = '0404') 
 
-        for usuario in usuarios:
+    cont = 0
+
+    if conect_BD.is_connected():
+
+        cursor = conect_BD.cursor()
+        cursor.execute('SELECT * FROM USUARIOS')
+
+        usuariosBD = cursor.fetchall()
+
+        for usuario in usuariosBD:
+
+            usuarioNome = str(usuario[1])
+            usuarioSenha = str(usuario[2])
 
             cont += 1
 
@@ -48,65 +67,51 @@ def login():
 
                 return redirect('/adm')
             
-            if nome == usuario['nome'] and senha == usuario['senha']:
+            if nome == usuarioNome and senha == usuarioSenha:
                 logado = True
                 return redirect('/usuarios')
             
-            if cont >= len(usuarios):
+            if cont >= len(usuariosBD):
                 flash('ERRO: LOGIN OU SENHA INVÁLIDOS')
-                
-
+                return redirect('/')
+            
+    else:        
         return redirect('/')
     
 @app.route('/cadastrarUsuario', methods=['POST'])
 def cadastrarUsuario():
+    global logado
     nome = request.form.get('nome')
     senha = request.form.get('senha')
 
-    with open('usuarios.json', 'r') as usuariosTemp:
-        usuarios = json.load(usuariosTemp)
-        
-        for usuario in usuarios:
-            if nome == usuario['nome']:
-                flash('ERRO: USUÁRIO JÁ CADASTRADO')
-                return redirect('/adm')
+ 
+    conect_BD = mysql.connector.connect(host='localhost', database='site_teste', user='root', password='0404')
 
-        novo_usuario = {
-            "nome": nome,
-            "senha": senha
-        }
+    if conect_BD.is_connected():
+        cursor = conect_BD.cursor()
+        cursor.execute(f"INSERT INTO USUARIOS VALUES (default, '{nome}', '{senha}')")
+        conect_BD.commit()
+        flash(f'USUÁRIO CADASTRADO')
 
-        usuarios.append(novo_usuario)
-
-        with open('usuarios.json', 'w') as gravarTemp:
-            json.dump(usuarios, gravarTemp, indent=4)
-
-            flash('USUÁRIO CADASTRADO')
-            
-
-        return redirect('/adm')
+    logado = True
+    return redirect('/adm')
     
 @app.route('/excluirUsuario', methods = ['POST'])
 def excluirUsuario():
     global logado
     logado = True
 
-    usuario = request.form.get('usuarioExclusao')
-    usuarioDict = ast.literal_eval(usuario)
+    conect_BD =  mysql.connector.connect(host = 'localhost', database = 'site_teste', user = 'root', password = '0404')
+    idUsuarioExclusao = int(request.form.get('usuarioExclusao'))
+    nomeUsuario = str(request.form.get('nome'))
+    nomeUsuario = nomeUsuario.upper()
 
-    nome = usuarioDict['nome']
+    if conect_BD.is_connected():
+        cursor = conect_BD.cursor()
+        cursor.execute(f"DELETE FROM USUARIOS WHERE id = {idUsuarioExclusao};")
+        conect_BD.commit()
 
-    with open('usuarios.json') as usuariosTemp:
-        usuarios= json.load(usuariosTemp)
-
-    for usuario in usuarios:
-        if usuario == usuarioDict:
-            usuarios.remove(usuario)
-
-            with open('usuarios.json', 'w') as gravarTemp:
-                json.dump(usuarios, gravarTemp, indent=4)
-
-    flash(F'{nome} EXCLUIDO COM SUCESSO')
+    flash(F'{nomeUsuario} EXCLUIDO COM SUCESSO')
 
     return redirect('/adm')
 

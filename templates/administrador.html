@@ -76,9 +76,10 @@
                 <form action="/excluirUsuario" method = "post">
 
                     <ul>
-                        <input type="hidden" name="usuarioExclusao" value = "{{usuario}}">
-                        <li>USUÁRIO: {{usuario['nome']}} </li>
-                        <li>SENHA: {{usuario['senha']}}</li>
+                        <input type="hidden" name="usuarioExclusao" value = "{{usuario[0]}}">
+                        <input type="hidden" name = "nome" value = "{{usuario[1]}}">
+                        <li>USUÁRIO: {{usuario[1]}} </li>
+                        <li>SENHA: {{usuario[2]}}</li>
                         <button type="subimit" class="btn btn-danger botaoExcluir">Excluir</button>
                         ______________________________________
                     </ul>
